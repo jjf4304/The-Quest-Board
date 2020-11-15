@@ -53,6 +53,7 @@ const AccountSchema = new mongoose.Schema({
 
 AccountSchema.statics.toAPI = (doc) => ({
   username: doc.username,
+  premiumMember: doc.premiumMember,
   _id: doc._id,
 });
 
@@ -98,6 +99,22 @@ AccountSchema.statics.authenticate = (username, password, callback) => {
       return callback();
     });
   });
+};
+
+
+AccountSchema.statics.becomePremium = (username, callback) =>{
+  AccountModel.findByUsername(username, (err, account)=>{
+    if(err){
+      return callback(err);
+    }
+
+    if(!account){
+      return callback();
+    }
+
+    return callback(account);
+
+  })
 };
 
 AccountModel = mongoose.model('Account', AccountSchema);
