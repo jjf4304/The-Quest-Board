@@ -1,0 +1,189 @@
+"use strict";
+
+var handleNewPost = function handleNewPost(e) {
+  e.preventDefault();
+  $("#errorMessage").animate({
+    width: 'hide'
+  }, 350);
+
+  if ($("#postTitle").val() == '') {
+    handleError("RAWR! All fields are required");
+    return false;
+  }
+
+  sendAjax('POST', $("#postForm").attr("action"), $("#postForm").serialize(), function () {
+    loadpostsFromServer();
+  });
+  return false;
+};
+
+var PostForm = function PostForm(props) {
+  return /*#__PURE__*/React.createElement("form", {
+    id: "postForm",
+    name: "postForm",
+    onSubmit: handleNewPost,
+    action: "/postGame",
+    method: "POST",
+    className: "postForm"
+  }, /*#__PURE__*/React.createElement("label", {
+    htmlFor: "title"
+  }, "Name: "), /*#__PURE__*/React.createElement("input", {
+    id: "postTitle",
+    type: "text",
+    name: "title",
+    placeholder: "Post Title"
+  }), /*#__PURE__*/React.createElement("label", {
+    htmlFor: "desc"
+  }, "Quest Description: "), /*#__PURE__*/React.createElement("textarea", {
+    id: "postDescription",
+    rows: "5",
+    cols: "30",
+    name: "desc",
+    placeholder: "Post Description"
+  }), /*#__PURE__*/React.createElement("input", {
+    type: "hidden",
+    name: "_csrf",
+    value: props.csrf
+  }), /*#__PURE__*/React.createElement("input", {
+    className: "makepostSubmit",
+    type: "submit",
+    value: "Make post"
+  }));
+};
+
+var PostList = function PostList(props) {
+  if (props.posts.length === 0) {
+    //Change this to the image with No Groups Available when finished
+    return /*#__PURE__*/React.createElement("div", {
+      className: "postList"
+    }, /*#__PURE__*/React.createElement("h3", null, "No Group Postings Yet Adventurer"));
+  }
+
+  var postNodes = props.posts.map(function (post) {
+    return /*#__PURE__*/React.createElement("div", {
+      "class": "postNode",
+      onclick: displayPost(post)
+    }, /*#__PURE__*/React.createElement("h2", null, post.title), /*#__PURE__*/React.createElement("h5", null, post.author));
+  });
+  return /*#__PURE__*/React.createElement("div", {
+    className: "posts"
+  }, postNodes);
+};
+
+function displayPost(e, post) {
+  e.preventDefault();
+  console.log("IN CLICK"); //change the display to singular post that shows everything,
+  //title, poster, desc and replies with form to reply with
+
+  showPage(post);
+  return false;
+}
+
+var loadPostsFromServer = function loadPostsFromServer() {
+  sendAjax('GET', '/getPosts', null, function (data) {
+    ReactDOM.render( /*#__PURE__*/React.createElement(PostList, {
+      posts: data.posts
+    }), document.querySelector("#questBoard"));
+  });
+};
+
+var setup = function setup(csrf) {
+  ReactDOM.render( /*#__PURE__*/React.createElement(PostForm, {
+    csrf: csrf
+  }), document.querySelector("#makePost"));
+  ReactDOM.render( /*#__PURE__*/React.createElement(PostList, {
+    posts: []
+  }), document.querySelector("#questBoard"));
+  loadPostsFromServer();
+};
+
+var getToken = function getToken() {
+  sendAjax('GET', '/getToken', null, function (result) {
+    setup(result.csrfToken);
+  });
+};
+
+$(document).ready(function () {
+  getToken();
+});
+"use strict";
+
+var handleError = function handleError(message) {
+  $("#errorMessage").text(message);
+  $("#errorMessage").animate({
+    width: 'toggle'
+  });
+  console.log("ERROR " + message);
+}; //Soruces https://api.jquery.com/animate/
+
+
+var showPage = function showPage(post) {
+  //this.... this is probably not the best way to do this
+  $("#fullPostTitle").text(post.title);
+  $("#fullPostPoster").text(post.author);
+  $("#fullPostDesc").text(post.description); //Replies?
+
+  $("#fullPost").animate({
+    width: 'toggle',
+    opacity: 'toggle'
+  });
+};
+
+var redirect = function redirect(response) {
+  $("#errorMessage").animate({
+    width: 'hide'
+  }, 350);
+  window.location = response.redirect;
+};
+
+var sendAjax = function sendAjax(type, action, data, success) {
+  $.ajax({
+    cache: false,
+    type: type,
+    url: action,
+    data: data,
+    dataType: "json",
+    success: success,
+    error: function error(xhr, status, _error) {
+      var messageObj = JSON.parse(xhr.responseText);
+      handleError(messageObj.error);
+    }
+  });
+};
+
+var handleLogin = function handleLogin(e) {
+  e.preventDefault();
+  $("#errorMessage").animate({
+    width: 'hide'
+  }, 350);
+
+  if ($("#user").val() == '' || $("#pass").val() == '') {
+    handleError("Username or password isempty");
+    return false;
+  }
+
+  console.log($("input[name=_csrf]").val());
+  sendAjax('POST', $("#loginForm").attr("action"), $("#loginForm").serialize(), redirect);
+  return false;
+};
+
+var handleSignup = function handleSignup(e) {
+  e.preventDefault();
+  console.log("IN HANDLE");
+  $("#errorMessage").animate({
+    width: 'hide'
+  }, 350);
+
+  if ($("#user").val() == '' || $("#pass").val() == '' || $("#pass2").val() == '') {
+    handleError("All fields required");
+    return false;
+  }
+
+  if ($("#pass").val() !== $("#pass2").val()) {
+    handleError("Passwords do not match");
+    return false;
+  }
+
+  sendAjax('POST', $("#signupForm").attr("action"), $("#signupForm").serialize(), redirect);
+  return false;
+};

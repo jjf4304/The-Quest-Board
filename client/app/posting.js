@@ -3,7 +3,7 @@ const handleNewPost = (e) =>{
 
     $("#errorMessage").animate({width: 'hide'}, 350);
 
-    if($("#postTitle").val() == '' || $("#postDescription").val() == ''){
+    if($("#postTitle").val() == '' || $("#postDescription").val() == ""){
         handleError("RAWR! All fields are required");
         return false;
     }
@@ -24,10 +24,10 @@ const PostForm = (props) =>{
             method="POST"
             className="postForm"
         >
-            <label htmlFor="name">Name: </label>
-            <input id="postTitle" type="text" name="name" placeholder="Post Title"/>
-            <label htmlFor="age">Age: </label>
-            <textarea id="postDescription" rows="5" cols="30" name="age" placeholder="Post Description"></textarea>
+            <label htmlFor="title">Name: </label>
+            <input id="postTitle" type="text" name="title" placeholder="Post Title"/>
+            <label htmlFor="desc">Quest Description: </label>
+            <textarea id="postDescription" rows="5" cols="30" name="desc" placeholder="Post Description"></textarea>
             <input type="hidden" name="_csrf" value={props.csrf}/>
             <input className="makepostSubmit" type="submit" value="Make post"/>
 

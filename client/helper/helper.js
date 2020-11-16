@@ -1,6 +1,7 @@
 const handleError = (message) =>{
     $("#errorMessage").text(message);
     $("#errorMessage").animate({width:'toggle'});
+    console.log("ERROR " + message);
 };
 
 //Soruces https://api.jquery.com/animate/
