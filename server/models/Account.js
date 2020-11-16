@@ -101,20 +101,18 @@ AccountSchema.statics.authenticate = (username, password, callback) => {
   });
 };
 
-
-AccountSchema.statics.becomePremium = (username, callback) =>{
-  AccountModel.findByUsername(username, (err, account)=>{
-    if(err){
+AccountSchema.statics.becomePremium = (username, callback) => {
+  AccountModel.findByUsername(username, (err, account) => {
+    if (err) {
       return callback(err);
     }
 
-    if(!account){
+    if (!account) {
       return callback();
     }
 
     return callback(account);
-
-  })
+  });
 };
 
 AccountModel = mongoose.model('Account', AccountSchema);

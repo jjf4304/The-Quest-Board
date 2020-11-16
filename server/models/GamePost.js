@@ -21,16 +21,15 @@ const GamePostSchema = new mongoose.Schema({
     required: true,
     ref: 'Account',
   },
-  replies:[{
-    poster:{
-        type: mongoose.Schema.ObjectId,
-        required: true,
-        ref: 'Account',
+  replies: [{
+    poster: {
+      type: String,
+      required: true,
     },
     reply: {
-        type: String,
-        required: true,
-    }
+      type: String,
+      required: true,
+    },
   }],
   description: {
     type: String,

@@ -75,39 +75,44 @@ const signup = (request, response) => {
 };
 
 const upgradeToPremium = (request, response) => {
-    const req = request;
-    const res = response;
+  const req = request;
+  const res = response;
 
-    //get the document by it's id, then set premium to true, then save and update current login
-    return Account.findById(req.session.account._id, (err, docs)=>{
-        if (err || !docs) {
-            return res.status(400).json({ error: 'An Error has occurred' });
-        }
+  return Account.updateOne({ _id: req.session.account._id }, { premiumMember: true }, (err) => {
+    if (err) {
+      return res.json({ error: 'An error has occurred' });
+    }
 
-        docs.premiumMember = true;
+    return res.json({ redirect: '/board' });
+  });
 
-        const savePromise = docs.save();
+  // get the document by it's id, then set premium to true, then save and update current login
+  // return Account.findById(req.session.account._id, (err, docs) => {
+  // if (err || !docs) {
+  //     return res.status(400).json({ error: 'An Error has occurred' });
+  // }
 
-        //Hopeful success
-        savePromise.then(() => {
-            req.session.account = Account.AccountModel.toAPI(newAccount);
-            //Change to a success/thank you screen?
-            return res.json({ redirect: '/board' });
-        });
+  // docs.premiumMember = true;
 
-        //
-        savePromise.catch((err) => {
-            return res.status(400).json({ error: 'An error occurred in becoming premium' });
-        });
-        
+  // const savePromise = docs.save();
 
-    });
+  // // Hopeful success
+  // savePromise.then(() => {
+  //     req.session.account = Account.AccountModel.toAPI(docs);
+  //     // Change to a success/thank you screen?
+  //     return res.json({ redirect: '/board' });
+  // });
 
-    // return Account.AccountModel.becomePremium(req.session.account.username, (docs) =>{
+  // //
+  // savePromise.catch((err) => res.status(400).json({
+  // error: 'An error occurred in becoming premium' }));
+  // });
 
-    //     docs.premiumMember = true;
-    // })
-}
+  // return Account.AccountModel.becomePremium(req.session.account.username, (docs) =>{
+
+  //     docs.premiumMember = true;
+  // })
+};
 
 const getToken = (request, response) => {
   const req = request;
