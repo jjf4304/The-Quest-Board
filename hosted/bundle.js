@@ -6,13 +6,13 @@ var handleNewPost = function handleNewPost(e) {
     width: 'hide'
   }, 350);
 
-  if ($("#postTitle").val() == '') {
-    handleError("RAWR! All fields are required");
+  if ($("#postTitle").val() == '' || $("#postDescription").val() == "") {
+    handleError("All fields are required");
     return false;
   }
 
   sendAjax('POST', $("#postForm").attr("action"), $("#postForm").serialize(), function () {
-    loadpostsFromServer();
+    loadPostsFromServer();
   });
   return false;
 };
@@ -30,16 +30,16 @@ var PostForm = function PostForm(props) {
   }, "Name: "), /*#__PURE__*/React.createElement("input", {
     id: "postTitle",
     type: "text",
-    name: "title",
+    name: "postTitle",
     placeholder: "Post Title"
   }), /*#__PURE__*/React.createElement("label", {
-    htmlFor: "desc"
+    htmlFor: "postDescription"
   }, "Quest Description: "), /*#__PURE__*/React.createElement("textarea", {
     id: "postDescription",
     rows: "5",
     cols: "30",
-    name: "desc",
-    placeholder: "Post Description"
+    name: "postDescription",
+    defaultValue: "Post Description"
   }), /*#__PURE__*/React.createElement("input", {
     type: "hidden",
     name: "_csrf",
@@ -61,8 +61,9 @@ var PostList = function PostList(props) {
 
   var postNodes = props.posts.map(function (post) {
     return /*#__PURE__*/React.createElement("div", {
-      "class": "postNode",
-      onclick: displayPost(post)
+      className: "postNode",
+      key: post._id,
+      onClick: displayPost(post)
     }, /*#__PURE__*/React.createElement("h2", null, post.title), /*#__PURE__*/React.createElement("h5", null, post.author));
   });
   return /*#__PURE__*/React.createElement("div", {
@@ -70,17 +71,16 @@ var PostList = function PostList(props) {
   }, postNodes);
 };
 
-function displayPost(e, post) {
-  e.preventDefault();
+function displayPost(post, e) {
+  //e.preventDefault();
   console.log("IN CLICK"); //change the display to singular post that shows everything,
   //title, poster, desc and replies with form to reply with
 
   showPage(post);
-  return false;
 }
 
 var loadPostsFromServer = function loadPostsFromServer() {
-  sendAjax('GET', '/getPosts', null, function (data) {
+  sendAjax('GET', '/getGamePosts', null, function (data) {
     ReactDOM.render( /*#__PURE__*/React.createElement(PostList, {
       posts: data.posts
     }), document.querySelector("#questBoard"));
@@ -109,10 +109,9 @@ $(document).ready(function () {
 "use strict";
 
 var handleError = function handleError(message) {
-  $("#errorMessage").text(message);
-  $("#errorMessage").animate({
-    width: 'toggle'
-  });
+  //I want to use this not for a side bar but for a modal like pop-in window
+  // $("#errorMessage").text(message);
+  // $("#errorMessage").animate({width:'toggle'});
   console.log("ERROR " + message);
 }; //Soruces https://api.jquery.com/animate/
 

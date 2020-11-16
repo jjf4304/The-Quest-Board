@@ -3,14 +3,14 @@ const models = require('../models');
 const { GamePost } = models;
 
 const makeGamePost = (req, res) => {
-  if (!req.body.title || !req.body.description) {
+  if (!req.body.postTitle || !req.body.postDescription) {
     return res.status(400).json({ error: 'We require both a Post Title and Description for a Quest.' });
   }
 
   const GamePostData = {
-    title: req.body.title,
+    title: req.body.postTitle,
     poster: req.session.account._id,
-    description: req.body.description,
+    description: req.body.postDescription,
   };
 
   const newGamePost = new GamePost.GamePostModel(GamePostData);
@@ -51,6 +51,7 @@ const getPosts = (request, response) => {
       return res.status(400).json({ error: 'An error has occurred retrieving Game Posts.' });
     }
 
+    console.log({posts: docs});
     return res.json({ posts: docs });
   });
 };

@@ -4,12 +4,12 @@ const handleNewPost = (e) =>{
     $("#errorMessage").animate({width: 'hide'}, 350);
 
     if($("#postTitle").val() == '' || $("#postDescription").val() == ""){
-        handleError("RAWR! All fields are required");
+        handleError("All fields are required");
         return false;
     }
 
     sendAjax('POST', $("#postForm").attr("action"), $("#postForm").serialize(), function(){
-        loadpostsFromServer();
+        loadPostsFromServer();
     });
 
     return false;
@@ -25,9 +25,9 @@ const PostForm = (props) =>{
             className="postForm"
         >
             <label htmlFor="title">Name: </label>
-            <input id="postTitle" type="text" name="title" placeholder="Post Title"/>
-            <label htmlFor="desc">Quest Description: </label>
-            <textarea id="postDescription" rows="5" cols="30" name="desc" placeholder="Post Description"></textarea>
+            <input id="postTitle" type="text" name="postTitle" placeholder="Post Title"/>
+            <label htmlFor="postDescription">Quest Description: </label>
+            <textarea id="postDescription" rows="5" cols="30" name="postDescription" defaultValue="Post Description"></textarea>
             <input type="hidden" name="_csrf" value={props.csrf}/>
             <input className="makepostSubmit" type="submit" value="Make post"/>
 
@@ -47,7 +47,7 @@ const PostList = function(props){
 
     const postNodes = props.posts.map(function(post){
         return(
-            <div class="postNode" onclick={displayPost(post)}>
+            <div className="postNode" key={post._id} onClick={displayPost(post)}>
                 <h2>{post.title}</h2>
                 <h5>{post.author}</h5>
             </div> 
@@ -61,19 +61,18 @@ const PostList = function(props){
     )
 }
 
-function displayPost(e, post){
-    e.preventDefault();
+function displayPost(post, e){
+    //e.preventDefault();
     console.log("IN CLICK");
     //change the display to singular post that shows everything,
     //title, poster, desc and replies with form to reply with
     showPage(post);
 
-    return false;
 }
 
 
 const loadPostsFromServer = () =>{
-    sendAjax('GET', '/getPosts', null, (data)=>{
+    sendAjax('GET', '/getGamePosts', null, (data)=>{
         ReactDOM.render(
             <PostList posts = {data.posts}/>, document.querySelector("#questBoard")
         );

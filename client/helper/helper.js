@@ -1,6 +1,7 @@
 const handleError = (message) =>{
-    $("#errorMessage").text(message);
-    $("#errorMessage").animate({width:'toggle'});
+    //I want to use this not for a side bar but for a modal like pop-in window
+    // $("#errorMessage").text(message);
+    // $("#errorMessage").animate({width:'toggle'});
     console.log("ERROR " + message);
 };
 
