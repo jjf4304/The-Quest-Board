@@ -1,15 +1,15 @@
 const models = require('../models');
 
-const { GamePost } = models;
+const { GamePost, Account } = models;
 
 const makeGamePost = (req, res) => {
   if (!req.body.postTitle || !req.body.postDescription) {
     return res.status(400).json({ error: 'We require both a Post Title and Description for a Quest.' });
   }
-  if(req.body.postRec === "on"){
+
+  if (req.body.postRec === 'on') {
     req.body.postRec = true;
-  }
-  else{
+  } else {
     req.body.postRec = false;
   }
 
@@ -22,22 +22,40 @@ const makeGamePost = (req, res) => {
     recurring: req.body.postRec,
   };
 
-  const newGamePost = new GamePost.GamePostModel(GamePostData);
-
-  const gamePostPromise = newGamePost.save();
-
-  gamePostPromise.then(() => res.json({ redirect: '/board' }));
-
-  gamePostPromise.catch((err) => {
-    console.log(err);
-    if (err.code === 11000) {
-      return res.status(400).json({ error: 'This Quest Post Already Exists' });
+  // check if the user posting hasnt already posted a game,
+  // and if so check if they are a premium member
+  return Account.AccountModel.findByUsername(req.session.account.username, (err, account) => {
+    if (err || !account) {
+      return res.status(400).json({ error: 'An Error has occurred in creating a post' });
     }
 
-    return res.status(400).json({ error: 'An Error Occurred' });
-  });
+    if (account.numberOfPosts >= 1 && account.premiumMember === false) {
+      return res.status(400).json({ error: 'You must be a premium member to post multiple Quests.' });
+    }
 
-  return gamePostPromise;
+    Account.AccountModel.findOneAndUpdate({ username: account.username },
+      { $inc: { numberOfPosts: 1 } }, (error, docs) => {
+        if (error) console.log('ERROR IN POST INCREMENT');
+        console.log(docs.premiumMember);
+      });
+
+    const newGamePost = new GamePost.GamePostModel(GamePostData);
+
+    const gamePostPromise = newGamePost.save();
+
+    gamePostPromise.then(() => res.json({ redirect: '/board' }));
+
+    gamePostPromise.catch((promiseErr) => {
+      console.log(promiseErr);
+      if (promiseErr.code === 11000) {
+        return res.status(400).json({ error: 'This Quest Post Already Exists' });
+      }
+
+      return res.status(400).json({ error: 'An Error Occurred' });
+    });
+
+    return gamePostPromise;
+  });
 };
 
 const questBoard = (req, res) => {
@@ -60,11 +78,6 @@ const getPosts = (request, response) => {
       return res.status(400).json({ error: 'An error has occurred retrieving Game Posts.' });
     }
 
-    console.log({posts: docs});
-
-    for(doc in docs){
-
-    }
     return res.json({ posts: docs });
   });
 };

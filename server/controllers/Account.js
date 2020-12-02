@@ -78,13 +78,14 @@ const upgradeToPremium = (request, response) => {
   const req = request;
   const res = response;
 
-  return Account.updateOne({ _id: req.session.account._id }, { premiumMember: true }, (err) => {
-    if (err) {
-      return res.json({ error: 'An error has occurred' });
-    }
-
-    return res.json({ redirect: '/board' });
-  });
+  return Account.updateOne({ _id: req.session.account._id },
+    { premiumMember: true }, (err, docs) => {
+      if (err) {
+        return res.json({ error: 'An error has occurred' });
+      }
+      console.log(docs);
+      return res.json({ redirect: '/board' });
+    });
 
   // get the document by it's id, then set premium to true, then save and update current login
   // return Account.findById(req.session.account._id, (err, docs) => {

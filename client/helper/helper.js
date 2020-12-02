@@ -5,22 +5,7 @@ const handleError = (message) =>{
     console.log("ERROR " + message);
 };
 
-//Soruces https://api.jquery.com/animate/
-const showPage = (post)=>{
-
-    //this.... this is probably not the best way to do this
-
-
-    $("#fullPostTitle").text(post.title);
-    $("#fullPostPoster").text(post.author);
-    $("#fullPostDesc").text(post.description);
-    //Replies?
-
-    $("#fullPost").animate({width:'toggle', opacity:'toggle'});
-};
-
 const redirect = (response) =>{
-    $("#errorMessage").animate({width:'hide'}, 350);
     window.location = response.redirect;
 };
 
@@ -42,7 +27,6 @@ const sendAjax = (type, action, data, success) =>{
 const handleLogin = (e) =>{
     e.preventDefault();
 
-    $("#errorMessage").animate({width:'hide'},350);
 
     if($("#user").val() == ''||$("#pass").val()==''){
         handleError("Username or password isempty");
@@ -60,7 +44,6 @@ const handleSignup = (e) =>{
 
     console.log("IN HANDLE");
 
-    $("#errorMessage").animate({width:'hide'},350);
 
     if($("#user").val() == ''||$("#pass").val()==''|| $("#pass2").val()==''){
         handleError("All fields required");

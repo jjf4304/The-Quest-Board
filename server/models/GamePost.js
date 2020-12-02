@@ -11,7 +11,6 @@ const setDesc = (desc) => _.escape(desc).trim();
 const setPoster = (poster) => _.escape(poster).trim();
 const setGame = (game) => _.escape(game).trim();
 
-
 const GamePostSchema = new mongoose.Schema({
   title: {
     type: String,
@@ -41,11 +40,11 @@ const GamePostSchema = new mongoose.Schema({
     trim: true,
     set: setGame,
   },
-  dateOfPlay:{
+  dateOfPlay: {
     type: Date,
     required: true,
   },
-  recurring:{
+  recurring: {
     type: Boolean,
     required: false,
     default: false,

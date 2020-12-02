@@ -150,25 +150,9 @@ var handleError = function handleError(message) {
   // $("#errorMessage").text(message);
   // $("#errorMessage").animate({width:'toggle'});
   console.log("ERROR " + message);
-}; //Soruces https://api.jquery.com/animate/
-
-
-var showPage = function showPage(post) {
-  //this.... this is probably not the best way to do this
-  $("#fullPostTitle").text(post.title);
-  $("#fullPostPoster").text(post.author);
-  $("#fullPostDesc").text(post.description); //Replies?
-
-  $("#fullPost").animate({
-    width: 'toggle',
-    opacity: 'toggle'
-  });
 };
 
 var redirect = function redirect(response) {
-  $("#errorMessage").animate({
-    width: 'hide'
-  }, 350);
   window.location = response.redirect;
 };
 
@@ -189,9 +173,6 @@ var sendAjax = function sendAjax(type, action, data, success) {
 
 var handleLogin = function handleLogin(e) {
   e.preventDefault();
-  $("#errorMessage").animate({
-    width: 'hide'
-  }, 350);
 
   if ($("#user").val() == '' || $("#pass").val() == '') {
     handleError("Username or password isempty");
@@ -206,9 +187,6 @@ var handleLogin = function handleLogin(e) {
 var handleSignup = function handleSignup(e) {
   e.preventDefault();
   console.log("IN HANDLE");
-  $("#errorMessage").animate({
-    width: 'hide'
-  }, 350);
 
   if ($("#user").val() == '' || $("#pass").val() == '' || $("#pass2").val() == '') {
     handleError("All fields required");
