@@ -1,7 +1,12 @@
+
 const handleNewPost = (e) =>{
     e.preventDefault();
 
-    $("#errorMessage").animate({width: 'hide'}, 350);
+    $("#errorDiv").animate({left: '-40%'}, 350);
+    $("#makePost").animate({left: '150%'}, 350);
+    $("#fullPost").animate({top: '150%'}, 350);
+    $("#darkLayer").hide(400);
+
 
     if($("#postTitle").val() == '' || $("#postDescription").val() == "") {
         handleError("All fields are required");
@@ -15,9 +20,30 @@ const handleNewPost = (e) =>{
     return false;
 };
 
+const handleNewReply = (e) =>{
+    e.preventDefault();
+
+    $("#errorDiv").animate({left: '-40%'}, 350);
+    $("#makePost").animate({left: '150%'}, 350);
+    $("#darkLayer").hide(400);
+
+    if($("#replyField").val() == ""){
+        handleError("All fields are required");
+        return false;
+    }
+
+    sendAjax('POST', $("#postReply").attr("action"), $("#postForm").serialize(), function(){
+        displayPost();
+    });
+
+    return false;
+
+}
+
 
 const PostForm = (props) =>{
     return(
+        <div>
         <form id="postForm" name="postForm"
             onSubmit={handleNewPost}
             action="/postGame"
@@ -28,16 +54,26 @@ const PostForm = (props) =>{
             <input id="postTitle" type="text" name="postTitle" placeholder="Post Title"/>
             <label htmlFor="postGame">Game: </label>
             <input id="postGame" type="text" name="postGame" placeholder="What Game are you playing?"/>
-            <label htmlFor="postDate">When is the game? </label>
-            <input id="postDate" type="date" name="postDate" min="2020-01-01" max="2030-01-01"/>
+            {/* not currently working, having trouble formatting it correctly to be useable? 
+            removed all uses of it for now*/}
+            {/* <label htmlFor="postDate">When is the game? </label>
+            <input id="postDate" type="date" name="postDate" min="2020-01-01" max="2030-01-01"/> */}
             <label htmlFor="postRec">Recurring Game? </label>
-            <input id="postRec" type="checkbox" name="postRec"/>
+            <select id="postRec" type="select" name="postRec">
+                <option value="true">Yes</option>
+                <option value="false">No</option>
+            </select>
             <label htmlFor="postDescription">Quest Description: </label>
             <textarea id="postDescription" rows="5" cols="30" name="postDescription" placeholder="Post Description"></textarea>
             <input type="hidden" name="_csrf" value={props.csrf}/>
-            <input className="makepostSubmit" type="submit" value="Make post"/>
+            <input className="formSubmit" type="submit" value="Make post"/>
 
         </form>
+        
+        <button id="closePost" onClick={e =>hidePost()}>Close Post</button>
+
+        </div>
+        
     );
 };
 
@@ -67,30 +103,24 @@ const PostList = function(props){
     )
 }
 
-function displayPost(post, e){
-    //e.preventDefault();
-    console.log("IN CLICK");
-    console.log(post.description);
-    //change the display to singular post that shows everything,
-    //title, poster, desc and replies with form to reply with
-    showPage(post);
+function displayPost(post){
 
+    console.log("IN DISPLAY");
+    
+    $("#fullPost").animate({top:'20%'}, 350);
+
+    ReactDOM.render(
+        <FullPostData post={post}/>, document.querySelector("#fullDetails")
+    );
+
+    ReactDOM.render(
+        <FullPostReplyField/>, document.querySelector("#fullReplyField")  
+    );
+
+    // ReactDOM.render(
+    //     <AllReplies post={post}/>, document.querySelector("#fullReplies")
+    // );
 }
-
-//Soruces https://api.jquery.com/animate/
-const showPage = (post)=>{
-
-    //this.... this is probably not the best way to do this
-
-
-    $("#fullPostTitle").text(post.title);
-    $("#fullPostPoster").text(post.author);
-    $("#fullPostDesc").text(post.description);
-    //Replies?
-
-    $("#fullPost").animate({top:'toggle', opacity:'toggle'});
-};
-
 
 
 const loadPostsFromServer = () =>{
@@ -99,7 +129,77 @@ const loadPostsFromServer = () =>{
             <PostList posts = {data.posts}/>, document.querySelector("#questBoard")
         );
     });
-}
+};
+
+const FullPostData = function(post){
+    console.log("INT FULL POST DATA");
+    console.log(post);
+    return(
+        <div id="fullData">
+            <h2>Game Title:</h2>
+            <input type="text" id="fullTitle" value={post.post.title} readOnly/>
+            <h2>Quest Giver:</h2>
+            <input type="text" id="fullPoster" value={post.post.poster} readOnly/>
+            {/* <h2>What Game is being played?</h2>
+            <input type="text" id="fullGame" value={post.post.game} readOnly/> */}
+            <h2>When is the Game?</h2>
+            <input type="date" id="fullDate" value={post.post.dateOfPlay} readOnly/>
+            <h2>Is it a recurring game?</h2>
+            <input type="text" id="fullRec" value={post.post.recurring} readOnly/>
+            <h2>Game Description</h2>
+            <textarea id="fullDescription" rows="5" cols="30" readOnly>{post.post.description}</textarea>
+        </div>
+    );
+
+};
+
+const FullPostReplyField = (props) =>{
+    return(
+        <form id="postReply" name="postReply"
+            onSubmit={handleNewReply}
+            action="/postReply"
+            method="POST"
+            className="postForm"
+        >
+
+            <label htmlFor="thePostReply">Reply: </label>
+            <textarea id="thePostReply" rows="5" cols="30" name="thePostReply" placeholder="Reply"></textarea>
+            <input className="formSubmit" type="submit" value="Reply to Post"/>
+
+        </form>
+    );
+};
+
+const AllReplies = (post) =>{
+    const replies = post.post.map(function(replies){
+        return(
+            <div className = "gameReply" key={replies.poster}>
+                <h3>{replies.poster}</h3>
+                <p>{replies.reply}</p>
+            </div>
+        );
+    });
+
+    return(
+        <div className="allReplies">
+            {replies}
+        </div>
+    );
+};
+
+const ShowMaker = () =>{
+    $("#makePost").animate({left: '30%'}, 350);
+    $("#darkLayer").show(400);
+
+};
+
+const MakerPageButton = () =>{
+    return(
+        <div id="makerButtonDiv">
+            <button id="makerButton" onClick={e =>ShowMaker()}>Post a Quest!</button>
+        </div>
+    );
+};
 
 const setup = function(csrf){
     ReactDOM.render(
@@ -110,8 +210,16 @@ const setup = function(csrf){
         <PostList posts ={[]}/>,document.querySelector("#questBoard")
     );
 
+    ReactDOM.render(
+        <MakerPageButton/>, document.querySelector("#makerButton")
+    );
+
+    ReactDOM.render(
+        <ErrorModal/>, document.querySelector("#error")   
+    );
+
     loadPostsFromServer();
-}
+};
 
 
 const getToken = () =>{

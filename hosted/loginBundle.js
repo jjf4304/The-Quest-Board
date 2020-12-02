@@ -57,7 +57,7 @@ var SignupWindow = function SignupWindow(props) {
     placeholder: "password"
   }), /*#__PURE__*/React.createElement("label", {
     htmlFor: "pass2"
-  }, "Password: "), /*#__PURE__*/React.createElement("input", {
+  }, "Retype Password: "), /*#__PURE__*/React.createElement("input", {
     id: "pass2",
     type: "password",
     name: "pass2",
@@ -98,6 +98,7 @@ var setup = function setup(csrf) {
     createLoginWindow(csrf);
     return false;
   });
+  ReactDOM.render( /*#__PURE__*/React.createElement(ErrorModal, null), document.querySelector("#error"));
   createLoginWindow(csrf);
 };
 
@@ -117,9 +118,18 @@ var handleError = function handleError(message) {
   // $("#errorMessage").text(message);
   // $("#errorMessage").animate({width:'toggle'});
   console.log("ERROR " + message);
+  $("#errorMessage").text(message); //https://stackoverflow.com/questions/17863490/animate-css-display
+
+  $("#darkLayer").show(400);
+  $("#errorDiv").animate({
+    left: '40%'
+  }, 500);
 };
 
 var redirect = function redirect(response) {
+  $("#errorDiv").animate({
+    left: '-50%'
+  }, 500);
   window.location = response.redirect;
 };
 
@@ -140,6 +150,9 @@ var sendAjax = function sendAjax(type, action, data, success) {
 
 var handleLogin = function handleLogin(e) {
   e.preventDefault();
+  $("#errorDiv").animate({
+    left: '-50%'
+  }, 500);
 
   if ($("#user").val() == '' || $("#pass").val() == '') {
     handleError("Username or password isempty");
@@ -153,7 +166,9 @@ var handleLogin = function handleLogin(e) {
 
 var handleSignup = function handleSignup(e) {
   e.preventDefault();
-  console.log("IN HANDLE");
+  $("#errorDiv").animate({
+    left: '-50%'
+  }, 500);
 
   if ($("#user").val() == '' || $("#pass").val() == '' || $("#pass2").val() == '') {
     handleError("All fields required");
@@ -167,4 +182,31 @@ var handleSignup = function handleSignup(e) {
 
   sendAjax('POST', $("#signupForm").attr("action"), $("#signupForm").serialize(), redirect);
   return false;
+};
+
+var hideError = function hideError() {
+  $("#errorDiv").animate({
+    left: '-50%'
+  }, 500);
+  $("#darkLayer").hide(400);
+};
+
+var hidePost = function hidePost() {
+  $("#makePost").animate({
+    left: '150%'
+  }, 500);
+  $("#darkLayer").hide(400);
+};
+
+var ErrorModal = function ErrorModal() {
+  return /*#__PURE__*/React.createElement("div", {
+    id: "errorDiv"
+  }, /*#__PURE__*/React.createElement("h3", null, /*#__PURE__*/React.createElement("span", {
+    id: "errorMessage"
+  })), /*#__PURE__*/React.createElement("button", {
+    id: "closeError",
+    onClick: function onClick(e) {
+      return hideError();
+    }
+  }, "Close Message"));
 };

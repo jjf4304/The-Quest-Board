@@ -58,6 +58,7 @@ const makeGamePost = (req, res) => {
   });
 };
 
+// Return all GamePosts in the database and render it to the app
 const questBoard = (req, res) => {
   GamePost.GamePostModel.find((err, docs) => {
     if (err) {
@@ -69,6 +70,7 @@ const questBoard = (req, res) => {
   });
 };
 
+// Just get all posts and return in as json
 const getPosts = (request, response) => {
   const res = response;
 
@@ -81,6 +83,11 @@ const getPosts = (request, response) => {
     return res.json({ posts: docs });
   });
 };
+
+// const addReply = (request, response) =>{
+//   const res = response;
+//   const req = request;
+// };
 
 module.exports.postQuest = makeGamePost;
 module.exports.getPosts = getPosts;

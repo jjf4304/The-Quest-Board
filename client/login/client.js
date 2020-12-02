@@ -29,7 +29,7 @@ const SignupWindow = (props) =>{
             <input id="user" type="text" name="username" placeholder="username"/>
             <label htmlFor="pass">Password: </label>
             <input id="pass" type="password" name="pass" placeholder="password"/>
-            <label htmlFor="pass2">Password: </label>
+            <label htmlFor="pass2">Retype Password: </label>
             <input id="pass2" type="password" name="pass2" placeholder="retype password"/>
             <input type="hidden" name="_csrf" value={props.csrf}/>
             <input className="formSubmit" type="submit" value="Sign Up"/>
@@ -67,6 +67,10 @@ const setup = (csrf) =>{
         createLoginWindow(csrf);
         return false;
     })
+
+    ReactDOM.render(
+        <ErrorModal/>, document.querySelector("#error")   
+    );
 
     createLoginWindow(csrf);
 };

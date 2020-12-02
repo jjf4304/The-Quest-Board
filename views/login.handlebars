@@ -10,16 +10,17 @@
     <link rel="stylesheet" type="text/css" href="/assets/styles.css"/>
 </head>
 <body> 
-  <div id="topBar">
-    <nav><a href="/login"><h3>Home</h3></a>
-      <div class="navlink"><a id="loginButton" href="/login">Login</a></div>
-      <div class="navlink"><a id="signupButton" href="/signup">Sign up</a></div>
-    </nav>
+  <div id="title">
+    <div id="topBar">
+        <div class="smallTitleImage" id="loginButton"><a href="/login"></a></div>
+        <div class="titleImage"></div>
+        <div class="smallTitleImage" id="signupButton"><a href="/signup"></a></div>
+    </div>
   </div>
 
-  <section id="content"></section>
-  <div id="errorMessage">
-    <h3><span id="errorMessage">Wrong username or password</span></h3>
+  <div id="content"></div>
+  <div id="error">
+
   </div>
   <script src="/assets/loginBundle.js"></script>
 </body>

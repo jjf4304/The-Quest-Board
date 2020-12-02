@@ -74,47 +74,23 @@ const signup = (request, response) => {
   });
 };
 
+// Upgrade the logged in account to premium, allowing them to post
+// multiple quests
 const upgradeToPremium = (request, response) => {
   const req = request;
   const res = response;
 
-  return Account.updateOne({ _id: req.session.account._id },
+  return Account.AccountModel.findOneAndUpdate({ _id: req.session.account._id },
     { premiumMember: true }, (err, docs) => {
       if (err) {
         return res.json({ error: 'An error has occurred' });
       }
       console.log(docs);
-      return res.json({ redirect: '/board' });
+      return res.redirect('/board');
     });
-
-  // get the document by it's id, then set premium to true, then save and update current login
-  // return Account.findById(req.session.account._id, (err, docs) => {
-  // if (err || !docs) {
-  //     return res.status(400).json({ error: 'An Error has occurred' });
-  // }
-
-  // docs.premiumMember = true;
-
-  // const savePromise = docs.save();
-
-  // // Hopeful success
-  // savePromise.then(() => {
-  //     req.session.account = Account.AccountModel.toAPI(docs);
-  //     // Change to a success/thank you screen?
-  //     return res.json({ redirect: '/board' });
-  // });
-
-  // //
-  // savePromise.catch((err) => res.status(400).json({
-  // error: 'An error occurred in becoming premium' }));
-  // });
-
-  // return Account.AccountModel.becomePremium(req.session.account.username, (docs) =>{
-
-  //     docs.premiumMember = true;
-  // })
 };
 
+// get the csrf token
 const getToken = (request, response) => {
   const req = request;
   const res = response;

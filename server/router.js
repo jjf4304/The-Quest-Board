@@ -9,6 +9,8 @@ const router = (app) => {
   app.get('/logout', mid.requiresLogin, controllers.Account.logout);
   app.get('/board', mid.requiresLogin, controllers.GamePost.questBoardPage);
   app.post('/postGame', mid.requiresLogin, controllers.GamePost.postQuest);
+  app.post('/postReply', mid.requiresLogin, controllers.GamePost.postQuest);
+  app.post('/becomePremium', mid.requiresLogin, controllers.Account.upgradeToPremium);
   app.get('/', mid.requiresSecure, mid.requiresLogout, controllers.Account.loginPage);
   app.get('/getGamePosts', mid.requiresLogin, controllers.GamePost.getPosts);
 

@@ -3,9 +3,15 @@ const handleError = (message) =>{
     // $("#errorMessage").text(message);
     // $("#errorMessage").animate({width:'toggle'});
     console.log("ERROR " + message);
+    $("#errorMessage").text(message);
+    //https://stackoverflow.com/questions/17863490/animate-css-display
+    $("#darkLayer").show(400);
+    $("#errorDiv").animate({left: '40%'}, 500);
+
 };
 
 const redirect = (response) =>{
+    $("#errorDiv").animate({left: '-50%'}, 500);
     window.location = response.redirect;
 };
 
@@ -27,6 +33,7 @@ const sendAjax = (type, action, data, success) =>{
 const handleLogin = (e) =>{
     e.preventDefault();
 
+    $("#errorDiv").animate({left: '-50%'}, 500);
 
     if($("#user").val() == ''||$("#pass").val()==''){
         handleError("Username or password isempty");
@@ -42,8 +49,7 @@ const handleLogin = (e) =>{
 const handleSignup = (e) =>{
     e.preventDefault();
 
-    console.log("IN HANDLE");
-
+    $("#errorDiv").animate({left: '-50%'}, 500);
 
     if($("#user").val() == ''||$("#pass").val()==''|| $("#pass2").val()==''){
         handleError("All fields required");
@@ -58,4 +64,25 @@ const handleSignup = (e) =>{
     sendAjax('POST', $("#signupForm").attr("action"), $("#signupForm").serialize(), redirect);
 
     return false;
+};
+
+const hideError = () =>{
+    $("#errorDiv").animate({left: '-50%'}, 500);
+    $("#darkLayer").hide(400);
+};
+
+const hidePost = () =>{
+    $("#makePost").animate({left: '150%'}, 500);
+    $("#darkLayer").hide(400);
+};
+
+const ErrorModal = function(){
+
+    return(
+        <div id="errorDiv">
+            <h3><span id="errorMessage"></span></h3>
+            <button id="closeError" onClick={e =>hideError()}>Close Message</button>
+        </div>
+    );
+
 };
