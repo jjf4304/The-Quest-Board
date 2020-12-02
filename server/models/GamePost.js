@@ -8,6 +8,9 @@ let GamePostModel = {};
 const convertID = mongoose.Types.ObjectId;
 const setTitle = (title) => _.escape(title).trim();
 const setDesc = (desc) => _.escape(desc).trim();
+const setPoster = (poster) => _.escape(poster).trim();
+const setGame = (game) => _.escape(game).trim();
+
 
 const GamePostSchema = new mongoose.Schema({
   title: {
@@ -17,9 +20,10 @@ const GamePostSchema = new mongoose.Schema({
     set: setTitle,
   },
   poster: {
-    type: mongoose.Schema.ObjectId,
+    type: String,
     required: true,
-    ref: 'Account',
+    trim: true,
+    set: setPoster,
   },
   replies: [{
     poster: {
@@ -31,6 +35,21 @@ const GamePostSchema = new mongoose.Schema({
       required: true,
     },
   }],
+  game: {
+    type: String,
+    required: true,
+    trim: true,
+    set: setGame,
+  },
+  dateOfPlay:{
+    type: Date,
+    required: true,
+  },
+  recurring:{
+    type: Boolean,
+    required: false,
+    default: false,
+  },
   description: {
     type: String,
     required: true,
@@ -46,6 +65,10 @@ const GamePostSchema = new mongoose.Schema({
 GamePostSchema.statics.toAPI = (doc) => ({
   title: doc.title,
   poster: doc.poster,
+  replies: doc.replies,
+  game: doc.game,
+  dateOfPlay: doc.dateOfPlay,
+  recurring: doc.recurring,
   description: doc.description,
   createdDate: doc.createdDate,
   _id: doc._id,

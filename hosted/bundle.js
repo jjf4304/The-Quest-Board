@@ -26,12 +26,33 @@ var PostForm = function PostForm(props) {
     method: "POST",
     className: "postForm"
   }, /*#__PURE__*/React.createElement("label", {
-    htmlFor: "title"
+    htmlFor: "postTitle"
   }, "Name: "), /*#__PURE__*/React.createElement("input", {
     id: "postTitle",
     type: "text",
     name: "postTitle",
     placeholder: "Post Title"
+  }), /*#__PURE__*/React.createElement("label", {
+    htmlFor: "postGame"
+  }, "Game: "), /*#__PURE__*/React.createElement("input", {
+    id: "postGame",
+    type: "text",
+    name: "postGame",
+    placeholder: "What Game are you playing?"
+  }), /*#__PURE__*/React.createElement("label", {
+    htmlFor: "postDate"
+  }, "When is the game? "), /*#__PURE__*/React.createElement("input", {
+    id: "postDate",
+    type: "date",
+    name: "postDate",
+    min: "2020-01-01",
+    max: "2030-01-01"
+  }), /*#__PURE__*/React.createElement("label", {
+    htmlFor: "postRec"
+  }, "Recurring Game? "), /*#__PURE__*/React.createElement("input", {
+    id: "postRec",
+    type: "checkbox",
+    name: "postRec"
   }), /*#__PURE__*/React.createElement("label", {
     htmlFor: "postDescription"
   }, "Quest Description: "), /*#__PURE__*/React.createElement("textarea", {
@@ -39,7 +60,7 @@ var PostForm = function PostForm(props) {
     rows: "5",
     cols: "30",
     name: "postDescription",
-    defaultValue: "Post Description"
+    placeholder: "Post Description"
   }), /*#__PURE__*/React.createElement("input", {
     type: "hidden",
     name: "_csrf",
@@ -63,8 +84,10 @@ var PostList = function PostList(props) {
     return /*#__PURE__*/React.createElement("div", {
       className: "postNode",
       key: post._id,
-      onClick: displayPost(post)
-    }, /*#__PURE__*/React.createElement("h2", null, post.title), /*#__PURE__*/React.createElement("h5", null, post.author));
+      onClick: function onClick(e) {
+        return displayPost(post);
+      }
+    }, /*#__PURE__*/React.createElement("h2", null, post.title), /*#__PURE__*/React.createElement("h4", null, "Posted by ", post.poster));
   });
   return /*#__PURE__*/React.createElement("div", {
     className: "posts"
@@ -73,11 +96,25 @@ var PostList = function PostList(props) {
 
 function displayPost(post, e) {
   //e.preventDefault();
-  console.log("IN CLICK"); //change the display to singular post that shows everything,
+  console.log("IN CLICK");
+  console.log(post.description); //change the display to singular post that shows everything,
   //title, poster, desc and replies with form to reply with
 
   showPage(post);
-}
+} //Soruces https://api.jquery.com/animate/
+
+
+var showPage = function showPage(post) {
+  //this.... this is probably not the best way to do this
+  $("#fullPostTitle").text(post.title);
+  $("#fullPostPoster").text(post.author);
+  $("#fullPostDesc").text(post.description); //Replies?
+
+  $("#fullPost").animate({
+    top: 'toggle',
+    opacity: 'toggle'
+  });
+};
 
 var loadPostsFromServer = function loadPostsFromServer() {
   sendAjax('GET', '/getGamePosts', null, function (data) {

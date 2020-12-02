@@ -6,11 +6,20 @@ const makeGamePost = (req, res) => {
   if (!req.body.postTitle || !req.body.postDescription) {
     return res.status(400).json({ error: 'We require both a Post Title and Description for a Quest.' });
   }
+  if(req.body.postRec === "on"){
+    req.body.postRec = true;
+  }
+  else{
+    req.body.postRec = false;
+  }
 
   const GamePostData = {
     title: req.body.postTitle,
-    poster: req.session.account._id,
+    poster: req.session.account.username,
     description: req.body.postDescription,
+    game: req.body.postGame,
+    dateOfPlay: req.body.postDate,
+    recurring: req.body.postRec,
   };
 
   const newGamePost = new GamePost.GamePostModel(GamePostData);
@@ -52,6 +61,10 @@ const getPosts = (request, response) => {
     }
 
     console.log({posts: docs});
+
+    for(doc in docs){
+
+    }
     return res.json({ posts: docs });
   });
 };
