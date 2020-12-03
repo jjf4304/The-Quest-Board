@@ -3,6 +3,9 @@ const mongoose = require('mongoose');
 mongoose.Promise = global.Promise;
 const _ = require('underscore');
 
+//Mongoose help found often at https://mongoosejs.com/docs/
+
+
 let GamePostModel = {};
 
 const convertID = mongoose.Types.ObjectId;

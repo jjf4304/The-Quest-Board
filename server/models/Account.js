@@ -1,6 +1,8 @@
 const crypto = require('crypto');
 const mongoose = require('mongoose');
 
+//Mongoose help found often at https://mongoosejs.com/docs/
+
 mongoose.Promise = global.Promise;
 
 let AccountModel = {};

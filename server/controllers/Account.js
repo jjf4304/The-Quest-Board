@@ -1,3 +1,5 @@
+//Mongoose help found often at https://mongoosejs.com/docs/
+
 const models = require('../models');
 
 const { Account } = models;
