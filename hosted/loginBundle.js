@@ -1,5 +1,6 @@
 "use strict";
 
+//React component for the loginform used on the home page/login page
 var LoginWindow = function LoginWindow(props) {
   return /*#__PURE__*/React.createElement("form", {
     id: "loginForm",
@@ -31,7 +32,8 @@ var LoginWindow = function LoginWindow(props) {
     type: "submit",
     value: "Sign in"
   }));
-};
+}; //REact component for the signup form for new users used at the signup page
+
 
 var SignupWindow = function SignupWindow(props) {
   return /*#__PURE__*/React.createElement("form", {
@@ -71,19 +73,23 @@ var SignupWindow = function SignupWindow(props) {
     type: "submit",
     value: "Sign Up"
   }));
-};
+}; //Renders the loginwindow component into the login.handlebars at #content
+
 
 var createLoginWindow = function createLoginWindow(csrf) {
   ReactDOM.render( /*#__PURE__*/React.createElement(LoginWindow, {
     csrf: csrf
   }), document.querySelector("#content"));
-};
+}; //Renders the signupwindow component into the login.handlebars at #content
+
 
 var createSignupWindow = function createSignupWindow(csrf) {
   ReactDOM.render( /*#__PURE__*/React.createElement(SignupWindow, {
     csrf: csrf
   }), document.querySelector("#content"));
-};
+}; //Sets up the buttons that trigger between the components and sets up the error
+//modal
+
 
 var setup = function setup(csrf) {
   var loginButton = document.querySelector("#loginButton");
@@ -113,10 +119,8 @@ $(document).ready(function () {
 });
 "use strict";
 
+//Animate the error modal and set it's error message
 var handleError = function handleError(message) {
-  //I want to use this not for a side bar but for a modal like pop-in window
-  // $("#errorMessage").text(message);
-  // $("#errorMessage").animate({width:'toggle'});
   console.log("ERROR " + message);
   $("#errorMessage").text(message); //https://stackoverflow.com/questions/17863490/animate-css-display
 
@@ -124,14 +128,16 @@ var handleError = function handleError(message) {
   $("#errorDiv").animate({
     left: '40%'
   }, 500);
-};
+}; //redirect page 
+
 
 var redirect = function redirect(response) {
   $("#errorDiv").animate({
     left: '-50%'
   }, 500);
   window.location = response.redirect;
-};
+}; //AJAX request helper function
+
 
 var sendAjax = function sendAjax(type, action, data, success) {
   $.ajax({
@@ -146,7 +152,8 @@ var sendAjax = function sendAjax(type, action, data, success) {
       handleError(messageObj.error);
     }
   });
-};
+}; //Send the AJAX request for logging in.
+
 
 var handleLogin = function handleLogin(e) {
   e.preventDefault();
@@ -162,7 +169,8 @@ var handleLogin = function handleLogin(e) {
   console.log($("input[name=_csrf]").val());
   sendAjax('POST', $("#loginForm").attr("action"), $("#loginForm").serialize(), redirect);
   return false;
-};
+}; //Send the AJAX request for signing up
+
 
 var handleSignup = function handleSignup(e) {
   e.preventDefault();
@@ -184,17 +192,20 @@ var handleSignup = function handleSignup(e) {
   return false;
 };
 
-var hideError = function hideError() {
-  $("#errorDiv").animate({
-    left: '-50%'
-  }, 500);
-  $("#darkLayer").hide(400);
-};
-
 var hidePost = function hidePost() {
+  //Animate help from w3schools https://www.w3schools.com/
+  $("#errorDiv").animate({
+    left: '-40%'
+  }, 350);
   $("#makePost").animate({
     left: '150%'
-  }, 500);
+  }, 350);
+  $("#changePassDiv").animate({
+    left: '150%'
+  }, 350);
+  $("#fullPost").animate({
+    top: '150%'
+  }, 350);
   $("#darkLayer").hide(400);
 };
 
@@ -206,7 +217,7 @@ var ErrorModal = function ErrorModal() {
   })), /*#__PURE__*/React.createElement("button", {
     id: "closeError",
     onClick: function onClick(e) {
-      return hideError();
+      return hidePost();
     }
   }, "Close Message"));
 };

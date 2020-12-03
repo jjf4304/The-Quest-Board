@@ -10,7 +10,10 @@ const setTitle = (title) => _.escape(title).trim();
 const setDesc = (desc) => _.escape(desc).trim();
 const setPoster = (poster) => _.escape(poster).trim();
 const setGame = (game) => _.escape(game).trim();
-
+ 
+//Gamepost Schema. Like the Account Schema, there are
+//some things that are not currently used until I can implement them
+//after the semester.
 const GamePostSchema = new mongoose.Schema({
   title: {
     type: String,
@@ -42,7 +45,7 @@ const GamePostSchema = new mongoose.Schema({
   },
   dateOfPlay: {
     type: Date,
-    required: true,
+    required: false, // need to change this when dates work
   },
   recurring: {
     type: Boolean,
@@ -73,6 +76,7 @@ GamePostSchema.statics.toAPI = (doc) => ({
   _id: doc._id,
 });
 
+//Be able to find a game by it's poster. Will be more useful later
 GamePostSchema.statics.findByPoster = (accountId, callback) => {
   const search = {
     poster: convertID(accountId),
@@ -81,6 +85,7 @@ GamePostSchema.statics.findByPoster = (accountId, callback) => {
   return GamePostModel.find(search).select('title poster description createdDate').lean().exec(callback);
 };
 
+//Find all game posts
 GamePostSchema.statics.findAllPosts = (callback) => GamePostModel.find({}).select('title poster description createdDate').lean().exec(callback);
 
 GamePostModel = mongoose.model('GamePost', GamePostSchema);

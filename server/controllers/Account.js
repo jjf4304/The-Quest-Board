@@ -2,15 +2,21 @@ const models = require('../models');
 
 const { Account } = models;
 
+//serve the login page
 const loginPage = (req, res) => {
   res.render('login', { csrfToken: req.csrfToken() });
 };
 
+//functionality to logout a user by removing the stored session
+//cookie and redirecting to the main page
 const logout = (req, res) => {
   req.session.destroy();
   res.redirect('/');
 };
 
+//Functionality to login a user. Checks if the required fields
+//(username and password) are supplied, then try to authenticate
+//the user. If that passes, set the session account to the found one
 const login = (request, response) => {
   const req = request;
   const res = response;
@@ -33,6 +39,11 @@ const login = (request, response) => {
   });
 };
 
+//Functionality to sign up a new user. Checks if the 
+//values sent in (username and passwords) are usable,
+//then create a secure password and salt.
+//After that passes, create a new Account and
+//set it to the new data.
 const signup = (request, response) => {
   const req = request;
   const res = response;
@@ -80,14 +91,56 @@ const upgradeToPremium = (request, response) => {
   const req = request;
   const res = response;
 
+
   return Account.AccountModel.findOneAndUpdate({ _id: req.session.account._id },
-    { premiumMember: true }, (err, docs) => {
+    { premiumMember: true }, (err) => {
       if (err) {
         return res.json({ error: 'An error has occurred' });
       }
-      console.log(docs);
-      return res.redirect('/board');
+     // return res.json({ redirect: '/board' });
     });
+};
+
+//Functionality to change the current user's password. Authenticates
+//based on the current password and then changes it to the new one
+//if it passes the check for being entered correctly
+const changePassword = (request, response) => {
+  const req = request;
+  const res = response;
+
+  const username = `${req.session.account.username}`;
+  const pass = `${req.body.pass}`;
+  const newPass = `${req.body.newPass}`;
+  const newPass2 = `${req.body.newPass2}`;
+
+  if (!username || !pass || !newPass || !newPass2) {
+    console.dir('Start of change error');
+    return res.status(400).json({ error: 'All fields are required.' });
+  }
+
+  if (newPass !== newPass2) {
+    return res.status(400).json({ error: 'New Passwords do not match.' });
+  }
+
+  return Account.AccountModel.authenticate(username, pass, (err, account) => {
+    if (err || !account) {
+      return res.status(400).json({ error: 'Wrong Username or Password' });
+    }
+
+    return Account.AccountModel.generateHash(newPass,
+      (salt, hash) => {
+        Account.AccountModel.findOneAndUpdate({ username: req.session.account.username },
+          { $set: { salt, password: hash } }, (e, docs) => {
+            if (e) {
+              return res.json({ error: 'An error occurred in changing your password.' });
+            }
+
+            req.session.account = Account.AccountModel.toAPI(docs);
+
+            return res.json({ redirect: '/board' });
+          });
+      });
+  });
 };
 
 // get the csrf token
@@ -108,3 +161,4 @@ module.exports.logout = logout;
 module.exports.signup = signup;
 module.exports.upgradeToPremium = upgradeToPremium;
 module.exports.getToken = getToken;
+module.exports.changePassword = changePassword;

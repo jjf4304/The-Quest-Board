@@ -1,3 +1,5 @@
+
+//React component for the loginform used on the home page/login page
 const LoginWindow = (props) =>{
     return(
         <form id="loginForm" name="loginForm"
@@ -17,6 +19,7 @@ const LoginWindow = (props) =>{
     );
 };
 
+//REact component for the signup form for new users used at the signup page
 const SignupWindow = (props) =>{
     return (
         <form id="signupForm" name="signupForm"
@@ -38,6 +41,7 @@ const SignupWindow = (props) =>{
     );
 };
 
+//Renders the loginwindow component into the login.handlebars at #content
 const createLoginWindow = (csrf) =>{
     ReactDOM.render(
         <LoginWindow csrf={csrf}/>,
@@ -45,6 +49,7 @@ const createLoginWindow = (csrf) =>{
     );
 };
 
+//Renders the signupwindow component into the login.handlebars at #content
 const createSignupWindow = (csrf) =>{
     ReactDOM.render(
         <SignupWindow csrf={csrf}/>,
@@ -52,6 +57,8 @@ const createSignupWindow = (csrf) =>{
     );
 };
 
+//Sets up the buttons that trigger between the components and sets up the error
+//modal
 const setup = (csrf) =>{
     const loginButton = document.querySelector("#loginButton");
     const signupButton = document.querySelector("#signupButton");

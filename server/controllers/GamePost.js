@@ -2,6 +2,9 @@ const models = require('../models');
 
 const { GamePost, Account } = models;
 
+//Create a new Game Post, requiring at leas a title and description. Checks if the 
+//user has posted more than one game and if so if they are a premium member (and thus
+//able to post multiple games). If so, create a new Game post.
 const makeGamePost = (req, res) => {
   if (!req.body.postTitle || !req.body.postDescription) {
     return res.status(400).json({ error: 'We require both a Post Title and Description for a Quest.' });
@@ -36,7 +39,6 @@ const makeGamePost = (req, res) => {
     Account.AccountModel.findOneAndUpdate({ username: account.username },
       { $inc: { numberOfPosts: 1 } }, (error, docs) => {
         if (error) console.log('ERROR IN POST INCREMENT');
-        console.log(docs.premiumMember);
       });
 
     const newGamePost = new GamePost.GamePostModel(GamePostData);
@@ -84,10 +86,6 @@ const getPosts = (request, response) => {
   });
 };
 
-// const addReply = (request, response) =>{
-//   const res = response;
-//   const req = request;
-// };
 
 module.exports.postQuest = makeGamePost;
 module.exports.getPosts = getPosts;

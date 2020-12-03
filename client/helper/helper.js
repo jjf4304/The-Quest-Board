@@ -1,7 +1,5 @@
+//Animate the error modal and set it's error message
 const handleError = (message) =>{
-    //I want to use this not for a side bar but for a modal like pop-in window
-    // $("#errorMessage").text(message);
-    // $("#errorMessage").animate({width:'toggle'});
     console.log("ERROR " + message);
     $("#errorMessage").text(message);
     //https://stackoverflow.com/questions/17863490/animate-css-display
@@ -10,11 +8,13 @@ const handleError = (message) =>{
 
 };
 
+//redirect page 
 const redirect = (response) =>{
     $("#errorDiv").animate({left: '-50%'}, 500);
     window.location = response.redirect;
 };
 
+//AJAX request helper function
 const sendAjax = (type, action, data, success) =>{
     $.ajax({
         cache: false,
@@ -30,6 +30,7 @@ const sendAjax = (type, action, data, success) =>{
     });
 };
 
+//Send the AJAX request for logging in.
 const handleLogin = (e) =>{
     e.preventDefault();
 
@@ -46,6 +47,7 @@ const handleLogin = (e) =>{
     return false;
 };
 
+//Send the AJAX request for signing up
 const handleSignup = (e) =>{
     e.preventDefault();
 
@@ -66,22 +68,23 @@ const handleSignup = (e) =>{
     return false;
 };
 
-const hideError = () =>{
-    $("#errorDiv").animate({left: '-50%'}, 500);
-    $("#darkLayer").hide(400);
-};
-
+//Hide various animations
 const hidePost = () =>{
-    $("#makePost").animate({left: '150%'}, 500);
+    //Animate help from w3schools https://www.w3schools.com/
+    $("#errorDiv").animate({left: '-40%'}, 350);
+    $("#makePost").animate({left: '150%'}, 350);
+    $("#changePassDiv").animate({left: '150%'}, 350);
+    $("#fullPost").animate({top: '150%'}, 350);
     $("#darkLayer").hide(400);
 };
 
+//Set up ErrorModal
 const ErrorModal = function(){
 
     return(
         <div id="errorDiv">
             <h3><span id="errorMessage"></span></h3>
-            <button id="closeError" onClick={e =>hideError()}>Close Message</button>
+            <button id="closeError" onClick={e =>hidePost()}>Close Message</button>
         </div>
     );
 

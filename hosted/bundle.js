@@ -1,17 +1,9 @@
 "use strict";
 
+//Handles sending the AJAX call for a new post
 var handleNewPost = function handleNewPost(e) {
   e.preventDefault();
-  $("#errorDiv").animate({
-    left: '-40%'
-  }, 350);
-  $("#makePost").animate({
-    left: '150%'
-  }, 350);
-  $("#fullPost").animate({
-    top: '150%'
-  }, 350);
-  $("#darkLayer").hide(400);
+  hidePost();
 
   if ($("#postTitle").val() == '' || $("#postDescription").val() == "") {
     handleError("All fields are required");
@@ -22,7 +14,8 @@ var handleNewPost = function handleNewPost(e) {
     loadPostsFromServer();
   });
   return false;
-};
+}; //Currently non functional, waiting for the future
+
 
 var handleNewReply = function handleNewReply(e) {
   e.preventDefault();
@@ -43,7 +36,35 @@ var handleNewReply = function handleNewReply(e) {
     displayPost();
   });
   return false;
-};
+}; //Handles the AJAX call for changing the users password
+
+
+var handleChangePass = function handleChangePass(e) {
+  e.preventDefault();
+  $("#errorDiv").animate({
+    left: '-40%'
+  }, 350);
+  $("#makePost").animate({
+    left: '150%'
+  }, 350);
+  $("#fullPost").animate({
+    top: '150%'
+  }, 350);
+  $("#darkLayer").hide(400);
+
+  if ($("#pass").val() == '' || $("#newPass").val() == '' || $("#newPass2").val() == '') {
+    handleError("All fields required");
+    return false;
+  }
+
+  if ($("#newPass").val() !== $("#newPass2").val()) {
+    handleError("New passwords do not match");
+    return false;
+  }
+
+  sendAjax('POST', $("#changePassForm").attr("action"), $("#changePassForm").serialize(), redirect);
+}; //Sets up the form for creating posts
+
 
 var PostForm = function PostForm(props) {
   return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("form", {
@@ -99,54 +120,10 @@ var PostForm = function PostForm(props) {
       return hidePost();
     }
   }, "Close Post"));
-};
+}; //Sets up the data for viewing the full post
 
-var PostList = function PostList(props) {
-  if (props.posts.length === 0) {
-    //Change this to the image with No Groups Available when finished
-    return /*#__PURE__*/React.createElement("div", {
-      className: "postList"
-    }, /*#__PURE__*/React.createElement("h3", null, "No Group Postings Yet Adventurer"));
-  }
-
-  var postNodes = props.posts.map(function (post) {
-    return /*#__PURE__*/React.createElement("div", {
-      className: "postNode",
-      key: post._id,
-      onClick: function onClick(e) {
-        return displayPost(post);
-      }
-    }, /*#__PURE__*/React.createElement("h2", null, post.title), /*#__PURE__*/React.createElement("h4", null, "Posted by ", post.poster));
-  });
-  return /*#__PURE__*/React.createElement("div", {
-    className: "posts"
-  }, postNodes);
-};
-
-function displayPost(post) {
-  console.log("IN DISPLAY");
-  $("#fullPost").animate({
-    top: '20%'
-  }, 350);
-  ReactDOM.render( /*#__PURE__*/React.createElement(FullPostData, {
-    post: post
-  }), document.querySelector("#fullDetails"));
-  ReactDOM.render( /*#__PURE__*/React.createElement(FullPostReplyField, null), document.querySelector("#fullReplyField")); // ReactDOM.render(
-  //     <AllReplies post={post}/>, document.querySelector("#fullReplies")
-  // );
-}
-
-var loadPostsFromServer = function loadPostsFromServer() {
-  sendAjax('GET', '/getGamePosts', null, function (data) {
-    ReactDOM.render( /*#__PURE__*/React.createElement(PostList, {
-      posts: data.posts
-    }), document.querySelector("#questBoard"));
-  });
-};
 
 var FullPostData = function FullPostData(post) {
-  console.log("INT FULL POST DATA");
-  console.log(post);
   return /*#__PURE__*/React.createElement("div", {
     id: "fullData"
   }, /*#__PURE__*/React.createElement("h2", null, "Game Title:"), /*#__PURE__*/React.createElement("input", {
@@ -173,12 +150,14 @@ var FullPostData = function FullPostData(post) {
     id: "fullDescription",
     rows: "5",
     cols: "30",
+    defaultValue: post.post.description,
     readOnly: true
-  }, post.post.description));
-};
+  }));
+}; //Currently non functional, waiting for the future
+
 
 var FullPostReplyField = function FullPostReplyField(props) {
-  return /*#__PURE__*/React.createElement("form", {
+  return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("form", {
     id: "postReply",
     name: "postReply",
     onSubmit: handleNewReply,
@@ -192,13 +171,114 @@ var FullPostReplyField = function FullPostReplyField(props) {
     rows: "5",
     cols: "30",
     name: "thePostReply",
-    placeholder: "Reply"
+    placeholder: "Reply (Coming Soon)"
   }), /*#__PURE__*/React.createElement("input", {
     className: "formSubmit",
     type: "submit",
     value: "Reply to Post"
-  }));
-};
+  })), /*#__PURE__*/React.createElement("button", {
+    id: "closePost",
+    onClick: function onClick(e) {
+      return hidePost();
+    }
+  }, "Close Post"));
+}; //Sets up the change password form
+
+
+var ChangePassWindow = function ChangePassWindow(props) {
+  return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("form", {
+    id: "changePassForm",
+    name: "changePassForm",
+    onSubmit: handleChangePass,
+    action: "/changePassword",
+    method: "POST",
+    className: "mainForm"
+  }, /*#__PURE__*/React.createElement("label", {
+    htmlFor: "pass"
+  }, "Password: "), /*#__PURE__*/React.createElement("input", {
+    id: "pass",
+    type: "password",
+    name: "pass",
+    placeholder: "password"
+  }), /*#__PURE__*/React.createElement("label", {
+    htmlFor: "newPass"
+  }, "Enter New Password: "), /*#__PURE__*/React.createElement("input", {
+    id: "newPass",
+    type: "password",
+    name: "newPass",
+    placeholder: "new password"
+  }), /*#__PURE__*/React.createElement("label", {
+    htmlFor: "newPass2"
+  }, "Retype New Password: "), /*#__PURE__*/React.createElement("input", {
+    id: "newPass2",
+    type: "password",
+    name: "newPass2",
+    placeholder: "retype new password"
+  }), /*#__PURE__*/React.createElement("input", {
+    type: "hidden",
+    name: "_csrf",
+    value: props.csrf
+  }), /*#__PURE__*/React.createElement("input", {
+    className: "formSubmit",
+    type: "submit",
+    value: "Change Password"
+  })), /*#__PURE__*/React.createElement("button", {
+    id: "closePost",
+    onClick: function onClick(e) {
+      return hidePost();
+    }
+  }, "Close Post"));
+}; //create and setup the button that shows the post maker form
+
+
+var MakerPageButton = function MakerPageButton() {
+  return /*#__PURE__*/React.createElement("div", {
+    id: "makerButtonDiv"
+  }, /*#__PURE__*/React.createElement("button", {
+    className: "uiButton",
+    id: "makerButton",
+    onClick: function onClick(e) {
+      return ShowMaker();
+    }
+  }, "Post a Quest!"));
+}; //create and setup the button that shows the change password form
+
+
+var SetupChangePassButton = function SetupChangePassButton() {
+  return /*#__PURE__*/React.createElement("div", {
+    id: "makerButtonDiv"
+  }, /*#__PURE__*/React.createElement("button", {
+    className: "uiButton",
+    id: "changePassButton",
+    onClick: function onClick(e) {
+      return ShowChangePass();
+    }
+  }, "Change Password"));
+}; //set up the content of the questboard through all of the posts
+
+
+var PostList = function PostList(props) {
+  if (props.posts.length === 0) {
+    //Change this to the image with No Groups Available when finished
+    return /*#__PURE__*/React.createElement("div", {
+      className: "postList"
+    }, /*#__PURE__*/React.createElement("h3", null, "No Group Postings Yet Adventurer"));
+  }
+
+  var postNodes = props.posts.map(function (post) {
+    return /*#__PURE__*/React.createElement("div", {
+      className: "postNode",
+      key: post._id,
+      onClick: function onClick(e) {
+        return displayPost(post);
+      }
+    }, /*#__PURE__*/React.createElement("h2", null, post.title), /*#__PURE__*/React.createElement("h4", null, "Posted by ", post.poster));
+  });
+  return /*#__PURE__*/React.createElement("div", {
+    className: "posts"
+  }, postNodes);
+}; ////Currently non functional, waiting for the future
+
 
 var AllReplies = function AllReplies(post) {
   var replies = post.post.map(function (replies) {
@@ -210,25 +290,47 @@ var AllReplies = function AllReplies(post) {
   return /*#__PURE__*/React.createElement("div", {
     className: "allReplies"
   }, replies);
-};
+}; //Displays the full post modal and React sets its values
+
+
+function displayPost(post) {
+  $("#fullPost").animate({
+    top: '20%'
+  }, 350);
+  ReactDOM.render( /*#__PURE__*/React.createElement(FullPostData, {
+    post: post
+  }), document.querySelector("#fullDetails"));
+  ReactDOM.render( /*#__PURE__*/React.createElement(FullPostReplyField, null), document.querySelector("#fullReplyField")); // ReactDOM.render(
+  //     <AllReplies post={post}/>, document.querySelector("#fullReplies")
+  // );
+} //Ajax call for getting game posts and rendering them to the questboard
+
+
+var loadPostsFromServer = function loadPostsFromServer() {
+  sendAjax('GET', '/getGamePosts', null, function (data) {
+    ReactDOM.render( /*#__PURE__*/React.createElement(PostList, {
+      posts: data.posts
+    }), document.querySelector("#questBoard"));
+  });
+}; //animate and show the maker form
+
 
 var ShowMaker = function ShowMaker() {
   $("#makePost").animate({
     left: '30%'
   }, 350);
   $("#darkLayer").show(400);
-};
+}; //animate and show the change password form
 
-var MakerPageButton = function MakerPageButton() {
-  return /*#__PURE__*/React.createElement("div", {
-    id: "makerButtonDiv"
-  }, /*#__PURE__*/React.createElement("button", {
-    id: "makerButton",
-    onClick: function onClick(e) {
-      return ShowMaker();
-    }
-  }, "Post a Quest!"));
-};
+
+var ShowChangePass = function ShowChangePass() {
+  console.log("IN CHANGE PASS SHOW");
+  $("#changePassDiv").animate({
+    left: '30%'
+  }, 350);
+  $("#darkLayer").show(400);
+}; //Setup the initial REact values
+
 
 var setup = function setup(csrf) {
   ReactDOM.render( /*#__PURE__*/React.createElement(PostForm, {
@@ -238,7 +340,11 @@ var setup = function setup(csrf) {
     posts: []
   }), document.querySelector("#questBoard"));
   ReactDOM.render( /*#__PURE__*/React.createElement(MakerPageButton, null), document.querySelector("#makerButton"));
+  ReactDOM.render( /*#__PURE__*/React.createElement(SetupChangePassButton, null), document.querySelector("#changePassButton"));
   ReactDOM.render( /*#__PURE__*/React.createElement(ErrorModal, null), document.querySelector("#error"));
+  ReactDOM.render( /*#__PURE__*/React.createElement(ChangePassWindow, {
+    csrf: csrf
+  }), document.querySelector("#changePassDiv"));
   loadPostsFromServer();
 };
 
@@ -253,10 +359,8 @@ $(document).ready(function () {
 });
 "use strict";
 
+//Animate the error modal and set it's error message
 var handleError = function handleError(message) {
-  //I want to use this not for a side bar but for a modal like pop-in window
-  // $("#errorMessage").text(message);
-  // $("#errorMessage").animate({width:'toggle'});
   console.log("ERROR " + message);
   $("#errorMessage").text(message); //https://stackoverflow.com/questions/17863490/animate-css-display
 
@@ -264,14 +368,16 @@ var handleError = function handleError(message) {
   $("#errorDiv").animate({
     left: '40%'
   }, 500);
-};
+}; //redirect page 
+
 
 var redirect = function redirect(response) {
   $("#errorDiv").animate({
     left: '-50%'
   }, 500);
   window.location = response.redirect;
-};
+}; //AJAX request helper function
+
 
 var sendAjax = function sendAjax(type, action, data, success) {
   $.ajax({
@@ -286,7 +392,8 @@ var sendAjax = function sendAjax(type, action, data, success) {
       handleError(messageObj.error);
     }
   });
-};
+}; //Send the AJAX request for logging in.
+
 
 var handleLogin = function handleLogin(e) {
   e.preventDefault();
@@ -302,7 +409,8 @@ var handleLogin = function handleLogin(e) {
   console.log($("input[name=_csrf]").val());
   sendAjax('POST', $("#loginForm").attr("action"), $("#loginForm").serialize(), redirect);
   return false;
-};
+}; //Send the AJAX request for signing up
+
 
 var handleSignup = function handleSignup(e) {
   e.preventDefault();
@@ -324,17 +432,20 @@ var handleSignup = function handleSignup(e) {
   return false;
 };
 
-var hideError = function hideError() {
-  $("#errorDiv").animate({
-    left: '-50%'
-  }, 500);
-  $("#darkLayer").hide(400);
-};
-
 var hidePost = function hidePost() {
+  //Animate help from w3schools https://www.w3schools.com/
+  $("#errorDiv").animate({
+    left: '-40%'
+  }, 350);
   $("#makePost").animate({
     left: '150%'
-  }, 500);
+  }, 350);
+  $("#changePassDiv").animate({
+    left: '150%'
+  }, 350);
+  $("#fullPost").animate({
+    top: '150%'
+  }, 350);
   $("#darkLayer").hide(400);
 };
 
@@ -346,7 +457,7 @@ var ErrorModal = function ErrorModal() {
   })), /*#__PURE__*/React.createElement("button", {
     id: "closeError",
     onClick: function onClick(e) {
-      return hideError();
+      return hidePost();
     }
   }, "Close Message"));
 };

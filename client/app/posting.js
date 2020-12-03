@@ -1,11 +1,9 @@
 
+//Handles sending the AJAX call for a new post
 const handleNewPost = (e) =>{
     e.preventDefault();
 
-    $("#errorDiv").animate({left: '-40%'}, 350);
-    $("#makePost").animate({left: '150%'}, 350);
-    $("#fullPost").animate({top: '150%'}, 350);
-    $("#darkLayer").hide(400);
+    hidePost();
 
 
     if($("#postTitle").val() == '' || $("#postDescription").val() == "") {
@@ -20,6 +18,7 @@ const handleNewPost = (e) =>{
     return false;
 };
 
+//Currently non functional, waiting for the future
 const handleNewReply = (e) =>{
     e.preventDefault();
 
@@ -38,9 +37,34 @@ const handleNewReply = (e) =>{
 
     return false;
 
-}
+};
+
+//Handles the AJAX call for changing the users password
+const handleChangePass = (e) =>{
+
+    e.preventDefault();
+    $("#errorDiv").animate({left: '-40%'}, 350);
+    $("#makePost").animate({left: '150%'}, 350);
+    $("#fullPost").animate({top: '150%'}, 350);
+    $("#darkLayer").hide(400);
 
 
+    if($("#pass").val() == ''||$("#newPass").val()==''|| $("#newPass2").val()==''){
+        handleError("All fields required");
+        return false;
+    }
+
+    if($("#newPass").val() !== $("#newPass2").val()){
+
+        handleError("New passwords do not match");
+        return false;
+    }
+
+    sendAjax('POST', $("#changePassForm").attr("action"), $("#changePassForm").serialize(), redirect);
+
+};
+
+//Sets up the form for creating posts
 const PostForm = (props) =>{
     return(
         <div>
@@ -77,6 +101,96 @@ const PostForm = (props) =>{
     );
 };
 
+//Sets up the data for viewing the full post
+const FullPostData = function(post){
+    return(
+        <div id="fullData">
+            <h2>Game Title:</h2>
+            <input type="text" id="fullTitle" value={post.post.title} readOnly/>
+            <h2>Quest Giver:</h2>
+            <input type="text" id="fullPoster" value={post.post.poster} readOnly/>
+            {/* <h2>What Game is being played?</h2>
+            <input type="text" id="fullGame" value={post.post.game} readOnly/> */}
+            <h2>When is the Game?</h2>
+            <input type="date" id="fullDate" value={post.post.dateOfPlay} readOnly/>
+            <h2>Is it a recurring game?</h2>
+            <input type="text" id="fullRec" value={post.post.recurring} readOnly/>
+            <h2>Game Description</h2>
+            <textarea id="fullDescription" rows="5" cols="30" defaultValue={post.post.description} readOnly></textarea>
+        </div>
+    );
+
+};
+
+//Currently non functional, waiting for the future
+const FullPostReplyField = (props) =>{
+    return(
+        <div>
+        <form id="postReply" name="postReply"
+            onSubmit={handleNewReply}
+            action="/postReply"
+            method="POST"
+            className="postForm"
+        >
+
+            <label htmlFor="thePostReply">Reply: </label>
+            <textarea id="thePostReply" rows="5" cols="30" name="thePostReply" placeholder="Reply (Coming Soon)"></textarea>
+            <input className="formSubmit" type="submit" value="Reply to Post"/>
+
+        </form>
+
+        <button id="closePost" onClick={e =>hidePost()}>Close Post</button>
+        </div>
+    );
+};
+
+//Sets up the change password form
+const ChangePassWindow = (props) =>{
+
+    return(
+        <div>
+            <form id="changePassForm" name="changePassForm"
+            onSubmit={handleChangePass}
+            action="/changePassword"
+            method="POST"
+            className="mainForm"
+            >
+                <label htmlFor="pass">Password: </label>
+                <input id="pass" type="password" name="pass" placeholder="password"/>
+                <label htmlFor="newPass">Enter New Password: </label>
+                <input id="newPass" type="password" name="newPass" placeholder="new password"/>
+                <label htmlFor="newPass2">Retype New Password: </label>
+                <input id="newPass2" type="password" name="newPass2" placeholder="retype new password"/>
+                <input type="hidden" name="_csrf" value={props.csrf}/>
+                <input className="formSubmit" type="submit" value="Change Password"/>
+
+            </form>
+
+            <button id="closePost" onClick={e =>hidePost()}>Close Post</button>
+        </div>
+
+    );
+};
+
+//create and setup the button that shows the post maker form
+const MakerPageButton = () =>{
+    return(
+        <div id="makerButtonDiv">
+            <button className="uiButton" id="makerButton" onClick={e =>ShowMaker()}>Post a Quest!</button>
+        </div>
+    );
+};
+
+//create and setup the button that shows the change password form
+const SetupChangePassButton = () =>{
+    return(
+        <div id="makerButtonDiv">
+            <button className="uiButton" id="changePassButton" onClick ={e =>ShowChangePass()}>Change Password</button>
+        </div>
+    );
+};
+
+//set up the content of the questboard through all of the posts
 const PostList = function(props){
     if(props.posts.length === 0){
         //Change this to the image with No Groups Available when finished
@@ -101,75 +215,9 @@ const PostList = function(props){
             {postNodes}
         </div>
     )
-}
-
-function displayPost(post){
-
-    console.log("IN DISPLAY");
-    
-    $("#fullPost").animate({top:'20%'}, 350);
-
-    ReactDOM.render(
-        <FullPostData post={post}/>, document.querySelector("#fullDetails")
-    );
-
-    ReactDOM.render(
-        <FullPostReplyField/>, document.querySelector("#fullReplyField")  
-    );
-
-    // ReactDOM.render(
-    //     <AllReplies post={post}/>, document.querySelector("#fullReplies")
-    // );
-}
-
-
-const loadPostsFromServer = () =>{
-    sendAjax('GET', '/getGamePosts', null, (data)=>{
-        ReactDOM.render(
-            <PostList posts = {data.posts}/>, document.querySelector("#questBoard")
-        );
-    });
 };
 
-const FullPostData = function(post){
-    console.log("INT FULL POST DATA");
-    console.log(post);
-    return(
-        <div id="fullData">
-            <h2>Game Title:</h2>
-            <input type="text" id="fullTitle" value={post.post.title} readOnly/>
-            <h2>Quest Giver:</h2>
-            <input type="text" id="fullPoster" value={post.post.poster} readOnly/>
-            {/* <h2>What Game is being played?</h2>
-            <input type="text" id="fullGame" value={post.post.game} readOnly/> */}
-            <h2>When is the Game?</h2>
-            <input type="date" id="fullDate" value={post.post.dateOfPlay} readOnly/>
-            <h2>Is it a recurring game?</h2>
-            <input type="text" id="fullRec" value={post.post.recurring} readOnly/>
-            <h2>Game Description</h2>
-            <textarea id="fullDescription" rows="5" cols="30" readOnly>{post.post.description}</textarea>
-        </div>
-    );
-
-};
-
-const FullPostReplyField = (props) =>{
-    return(
-        <form id="postReply" name="postReply"
-            onSubmit={handleNewReply}
-            action="/postReply"
-            method="POST"
-            className="postForm"
-        >
-
-            <label htmlFor="thePostReply">Reply: </label>
-            <textarea id="thePostReply" rows="5" cols="30" name="thePostReply" placeholder="Reply"></textarea>
-            <input className="formSubmit" type="submit" value="Reply to Post"/>
-
-        </form>
-    );
-};
-
+////Currently non functional, waiting for the future
 const AllReplies = (post) =>{
     const replies = post.post.map(function(replies){
         return(
@@ -187,20 +235,49 @@ const AllReplies = (post) =>{
     );
 };
 
+//Displays the full post modal and React sets its values
+function displayPost(post){
+
+    
+    $("#fullPost").animate({top:'20%'}, 350);
+
+    ReactDOM.render(
+        <FullPostData post={post}/>, document.querySelector("#fullDetails")
+    );
+
+    ReactDOM.render(
+        <FullPostReplyField/>, document.querySelector("#fullReplyField")  
+    );
+
+    // ReactDOM.render(
+    //     <AllReplies post={post}/>, document.querySelector("#fullReplies")
+    // );
+}
+
+//Ajax call for getting game posts and rendering them to the questboard
+const loadPostsFromServer = () =>{
+    sendAjax('GET', '/getGamePosts', null, (data)=>{
+        ReactDOM.render(
+            <PostList posts = {data.posts}/>, document.querySelector("#questBoard")
+        );
+    });
+};
+
+//animate and show the maker form
 const ShowMaker = () =>{
     $("#makePost").animate({left: '30%'}, 350);
     $("#darkLayer").show(400);
 
 };
 
-const MakerPageButton = () =>{
-    return(
-        <div id="makerButtonDiv">
-            <button id="makerButton" onClick={e =>ShowMaker()}>Post a Quest!</button>
-        </div>
-    );
+//animate and show the change password form
+const ShowChangePass = () =>{
+    console.log("IN CHANGE PASS SHOW");
+    $("#changePassDiv").animate({left: '30%'}, 350);
+    $("#darkLayer").show(400);
 };
 
+//Setup the initial REact values
 const setup = function(csrf){
     ReactDOM.render(
         <PostForm csrf={csrf}/>, document.querySelector("#makePost")
@@ -215,7 +292,15 @@ const setup = function(csrf){
     );
 
     ReactDOM.render(
+        <SetupChangePassButton/>, document.querySelector("#changePassButton")
+    );
+
+    ReactDOM.render(
         <ErrorModal/>, document.querySelector("#error")   
+    );
+
+    ReactDOM.render(
+        <ChangePassWindow csrf={csrf}/>, document.querySelector("#changePassDiv")  
     );
 
     loadPostsFromServer();
