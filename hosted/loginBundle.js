@@ -190,7 +190,8 @@ var handleSignup = function handleSignup(e) {
 
   sendAjax('POST', $("#signupForm").attr("action"), $("#signupForm").serialize(), redirect);
   return false;
-};
+}; //Hide various animations
+
 
 var hidePost = function hidePost() {
   //Animate help from w3schools https://www.w3schools.com/
@@ -207,7 +208,8 @@ var hidePost = function hidePost() {
     top: '150%'
   }, 350);
   $("#darkLayer").hide(400);
-};
+}; //Set up ErrorModal
+
 
 var ErrorModal = function ErrorModal() {
   return /*#__PURE__*/React.createElement("div", {

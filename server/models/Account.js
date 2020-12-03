@@ -1,7 +1,7 @@
 const crypto = require('crypto');
 const mongoose = require('mongoose');
 
-//Mongoose help found often at https://mongoosejs.com/docs/
+// Mongoose help found often at https://mongoosejs.com/docs/
 
 mongoose.Promise = global.Promise;
 
@@ -10,9 +10,9 @@ const iterations = 10000;
 const saltLength = 64;
 const keyLength = 64;
 
-//The Account Schema. Some values are not currently used
-//as they are things I didn't get to work on but want to in
-//the future.
+// The Account Schema. Some values are not currently used
+// as they are things I didn't get to work on but want to in
+// the future.
 const AccountSchema = new mongoose.Schema({
   username: {
     type: String,
@@ -56,15 +56,15 @@ const AccountSchema = new mongoose.Schema({
   },
 });
 
-//functionality to return the following data for use in session
+// functionality to return the following data for use in session
 AccountSchema.statics.toAPI = (doc) => ({
   username: doc.username,
   premiumMember: doc.premiumMember,
   _id: doc._id,
 });
 
-//Validates the given password, checking if the hashed password equals
-//the password sent in then continue to the next callback function
+// Validates the given password, checking if the hashed password equals
+// the password sent in then continue to the next callback function
 const validatePass = (doc, password, callback) => {
   const pass = doc.password;
   return crypto.pbkdf2(password, doc.salt, iterations, keyLength, 'RSA-SHA512', (err, hash) => {
@@ -75,7 +75,7 @@ const validatePass = (doc, password, callback) => {
   });
 };
 
-//Functionality to find an account by it's username
+// Functionality to find an account by it's username
 AccountSchema.statics.findByUsername = (name, callback) => {
   const search = {
     username: name,
@@ -84,14 +84,14 @@ AccountSchema.statics.findByUsername = (name, callback) => {
   return AccountModel.findOne(search, callback);
 };
 
-//Generates a salt and hash for a password, used in account creation and password changing
+// Generates a salt and hash for a password, used in account creation and password changing
 AccountSchema.statics.generateHash = (password, callback) => {
   const salt = crypto.randomBytes(saltLength);
 
   crypto.pbkdf2(password, salt, iterations, keyLength, 'RSA-SHA512', (err, hash) => callback(salt, hash.toString('hex')));
 };
 
-//Functionality to check if a username and password pairs up to an acocunt
+// Functionality to check if a username and password pairs up to an acocunt
 AccountSchema.statics.authenticate = (username, password, callback) => {
   AccountModel.findByUsername(username, (err, doc) => {
     if (err) {
@@ -111,7 +111,7 @@ AccountSchema.statics.authenticate = (username, password, callback) => {
   });
 };
 
-//Functionality to find a user in order to get them to become premium
+// Functionality to find a user in order to get them to become premium
 AccountSchema.statics.becomePremium = (username, callback) => {
   AccountModel.findByUsername(username, (err, account) => {
     if (err) {

@@ -1,5 +1,5 @@
-//Middleware that requires a user be logged in to 
-//access further functionality
+// Middleware that requires a user be logged in to
+// access further functionality
 const requiresLogin = (req, res, next) => {
   if (!req.session.account) {
     return res.redirect('/');
@@ -7,8 +7,8 @@ const requiresLogin = (req, res, next) => {
   return next();
 };
 
-//functionality to require that someone be logged out to continue
-//to the next function.
+// functionality to require that someone be logged out to continue
+// to the next function.
 const requiresLogout = (req, res, next) => {
   if (req.session.account) {
     return res.redirect('/board');
@@ -16,7 +16,7 @@ const requiresLogout = (req, res, next) => {
   return next();
 };
 
-//Middleware requiring a https connection
+// Middleware requiring a https connection
 const requiresSecure = (req, res, next) => {
   if (req.headers['x-forwarded-proto'] !== 'https') {
     return res.redirect(`https://${req.hostname}${req.url}`);
@@ -24,7 +24,7 @@ const requiresSecure = (req, res, next) => {
   return next();
 };
 
-//used in local testing
+// used in local testing
 const bypassSecure = (req, res, next) => {
   next();
 };
