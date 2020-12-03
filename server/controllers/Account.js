@@ -98,7 +98,7 @@ const upgradeToPremium = (request, response) => {
       if (err) {
         return res.json({ error: 'An error has occurred' });
       }
-      res.redirect('/board');
+      return res.redirect('/board');
     });
 };
 
